@@ -1,5 +1,5 @@
 # cookiecutter-xmds-gpe
-A cookiecutter to scaffold gpe projects run by [xmds](http://www.xmds.org/index.html). It uses [jinja](https://jinja.palletsprojects.com/en/2.11.x/) and [doit](https://pydoit.org/) to structure and run the simulation, and includes a simple data cisualization script based on `matplotlib` and optionally [moviepy](https://zulko.github.io/moviepy/)
+A cookiecutter to scaffold gpe projects run by [xmds](http://www.xmds.org/index.html). It uses [jinja](https://jinja.palletsprojects.com/en/2.11.x/) and [doit](https://pydoit.org/) to structure and run the simulation, and includes a simple data visualization script based on `matplotlib` and optionally [moviepy](https://zulko.github.io/moviepy/)
 
 ## Quick recap
 
