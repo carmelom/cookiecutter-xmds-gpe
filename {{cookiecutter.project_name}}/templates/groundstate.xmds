@@ -1,0 +1,61 @@
+<simulation xmds-version="2">
+
+    {% include 'header.xmds' %}
+
+
+    <vector name="wavefunction" dimensions="x" type="complex">
+        <components>psi</components>
+            <initialisation>
+                <![CDATA[
+                psi = 1.00 * exp(-x*x / 20);
+                if (x >= imprint_x0) psi *= -1;
+                ]]>
+            </initialisation>
+    </vector>
+
+    <computed_vector name="normalization" dimensions="" type="real">
+        <components>
+            Norm
+        </components>
+        <evaluation>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[Norm = mod2(psi);]]>
+        </evaluation>
+    </computed_vector>
+
+    <sequence>
+        <integrate algorithm="ARK45" interval="1" steps="300" tolerance="1e-06">
+            <samples> 100 </samples>
+            <filters where="step end">
+                <filter>
+                    <dependencies>wavefunction normalization</dependencies>
+                    <![CDATA[psi *= sqrt(N/Norm);]]>
+                </filter>
+            </filters>
+            <operators>
+                <operator kind="ip">
+                    <operator_names>Tx</operator_names>
+                    <![CDATA[Tx = -0.5*kx*kx;]]>
+                </operator>
+                <integration_vectors>wavefunction</integration_vectors>
+                <dependencies>potential</dependencies>
+                <![CDATA[
+		dpsi_dt = Tx[psi] - (V1 + g*mod2(psi))*psi;
+		]]>
+            </operators>
+        </integrate>
+        <breakpoint filename="{{conf.output_filename | replace(".h5", "")}}" format="hdf5">
+            <dependencies basis="x">wavefunction</dependencies>
+        </breakpoint>
+    </sequence>
+
+    <!-- <output/> -->
+    <output filename="{{conf.output_filename | replace(".h5", "")}}_full">
+        <sampling_group basis="x" initial_sample="yes">
+            <moments>psiR psiI</moments>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[_SAMPLE_COMPLEX(psi);]]>
+        </sampling_group>
+    </output>
+
+</simulation>

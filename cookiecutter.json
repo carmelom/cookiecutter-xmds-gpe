@@ -1,0 +1,6 @@
+{
+    "project_name": "soliton",
+    "_copy_without_render": [
+        "*templates"
+    ]
+}

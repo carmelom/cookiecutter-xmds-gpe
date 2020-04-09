@@ -1,0 +1,35 @@
+  <name>{{conf.exec_filename}}</name>
+
+  <author>CM</author>
+
+  <description/>
+
+  <features>
+    <auto_vectorise/>
+    <benchmark/>
+    <bing/>
+    <fftw plan="measure"/>
+    <openmp threads="8"/>
+    <globals><![CDATA[
+    const real N = 40000.0;
+    const real a_scatt = 0.0004150924143715271;
+	const real g = 4*M_PI*a_scatt;
+    {% for key, value in conf.globals.items() %}
+    real {{key}} = {{value}};
+    {% endfor %}
+	]]></globals>
+  </features>
+
+  <geometry>
+    <propagation_dimension>t</propagation_dimension>
+    <transverse_dimensions>
+        <dimension name="x" domain="(-20, 20)" lattice="1024"/>
+    </transverse_dimensions>
+  </geometry>
+
+  <vector name="potential" dimensions="x" type="real">
+    <components>V1</components>
+    <initialisation>
+        <![CDATA[V1 = 0.5*x*x;]]>
+    </initialisation>
+  </vector>

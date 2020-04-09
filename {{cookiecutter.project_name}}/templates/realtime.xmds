@@ -1,0 +1,39 @@
+<simulation xmds-version="2">
+
+    {% include 'header.xmds' %}
+
+
+    <vector name="wavefunction" dimensions="x" type="complex">
+        <components>psi</components>
+            <initialisation kind="hdf5">
+                <filename>{{conf.init_filename}}</filename>
+            </initialisation>
+    </vector>
+
+    <sequence>
+        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{conf.steps}}" tolerance="1e-06">
+            <samples>
+                200
+            </samples>
+            <operators>
+                <operator kind="ip">
+                    <operator_names>Tx</operator_names>
+                    <![CDATA[Tx = -i*0.5*kx*kx;]]>
+                </operator>
+                <integration_vectors>wavefunction</integration_vectors>
+                <dependencies>potential</dependencies>
+                <![CDATA[
+		dpsi_dt = Tx[psi] - i*(V1 + g*mod2(psi))*psi;
+		]]>
+            </operators>
+        </integrate>
+    </sequence>
+
+    <output filename="{{conf.output_filename | replace(".h5", "")}}">
+        <sampling_group basis="x" initial_sample="yes">
+            <moments>psiR psiI</moments>
+            <dependencies>wavefunction</dependencies>
+            <![CDATA[_SAMPLE_COMPLEX(psi);]]>
+        </sampling_group>
+    </output>
+</simulation>
