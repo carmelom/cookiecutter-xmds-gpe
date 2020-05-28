@@ -33,31 +33,23 @@ realtime_output = "soliton.h5"
 
 
 def task_groundstate():
-    name = 'groundstate'
     conf = {
-        'exec_filename': name,
+        'exec_filename': 'groundstate',
         'output_filename': groundstate_output,
         'globals': {'imprint_x0': x0}
     }
-    yield tasks.create_render_task(name, build_path, conf)
-    yield tasks.create_compile_task(name, build_path)
-    yield tasks.create_run_task(name, build_path, groundstate_output)
+    return tasks.xmds_run(build_path, conf)
 
 
 def task_realtime():
-    name = 'realtime'
-    init_filename = groundstate_output
-    output_filename = realtime_output
     conf = {
-        'exec_filename': name,
-        'init_filename': init_filename,
-        'output_filename': output_filename,
+        'exec_filename': 'realtime',
+        'init_filename': groundstate_output,
+        'output_filename': realtime_output,
         'globals': {},
         'runtime': runtime, 'steps': steps
     }
-    yield tasks.create_render_task(name, build_path, conf)
-    yield tasks.create_compile_task(name, build_path)
-    yield tasks.create_run_task(name, build_path, output_filename, init_filename)
+    return tasks.xmds_run(build_path, conf)
 
 
 def task_movie():

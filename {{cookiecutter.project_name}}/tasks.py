@@ -24,6 +24,19 @@ def render_template(template_name, output_name, conf):
         f.write(output)
 
 
+def xmds_run(build_path, conf):
+    """Mandatory keys in conf:
+        exec_filename: name of the xmds script
+        output_filename: target h5file
+    """
+    name = conf['exec_filename']
+    output_filename = conf['output_filename']
+    init_filename = conf.get('init_filename', None)
+    yield create_render_task(name, build_path, conf)
+    yield create_compile_task(name, build_path)
+    yield create_run_task(name, build_path, output_filename, init_filename)
+
+
 # rudimental task creators
 # So I avoid to write the render - compile - run loop twice
 def create_render_task(name, build_path, conf):
