@@ -19,17 +19,3 @@
     {% endfor %}
 	]]></globals>
   </features>
-
-  <geometry>
-    <propagation_dimension>t</propagation_dimension>
-    <transverse_dimensions>
-        <dimension name="x" domain="(-20, 20)" lattice="1024"/>
-    </transverse_dimensions>
-  </geometry>
-
-  <vector name="potential" dimensions="x" type="real">
-    <components>V1</components>
-    <initialisation>
-        <![CDATA[V1 = 0.5*x*x;]]>
-    </initialisation>
-  </vector>

@@ -1,59 +1,58 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Create: 01-2020 - Carmelo Mordini <carmelo> <carmelo.mordini@unitn.it>
+# Created: 07-2020 - Carmelo Mordini <carmelo> <carmelo.mordini@unitn.it>
 
 """Module docstring
 
 """
 from pathlib import Path
-from movie import make_movie
-import tasks
+import itertools
+from copy import deepcopy
 
-
-build_path = Path('build')
-build_path.mkdir(parents=True, exist_ok=True)
-
+from ruamel import yaml
+from pprint import pprint
 
 DOIT_CONFIG = {
-    'verbosity': 1,
-    # 'default_tasks': [
-    #     'groundstate',
-    #     'realtime',
-    # ]
+    'verbosity': 2,
+    'backend': 'json',
 }
 
-x0 = 3
-runtime = 10
-dt = 3e-3
-steps = int(round(runtime / dt / 100) * 100)
 
-groundstate_output = "groundstate.h5"
-realtime_output = "soliton.h5"
+with open('configure.yaml', 'r') as f:
+    conf = yaml.safe_load(f)
 
+run_dir = Path(conf['run_dir'])
+run_dir.mkdir(parents=True, exist_ok=True)
+sequence_index = len(list(run_dir.iterdir()))
 
-def task_groundstate():
-    conf = {
-        'exec_filename': 'groundstate',
-        'output_filename': groundstate_output,
-        'globals': {'imprint_x0': x0}
-    }
-    return tasks.xmds_run(build_path, conf)
+scan = {
+    'imprint_x0': list(range(1, 5, 1)),
+}
 
+keys, values = list(zip(*scan.items()))
 
-def task_realtime():
-    conf = {
-        'exec_filename': 'realtime',
-        'init_filename': groundstate_output,
-        'output_filename': realtime_output,
-        'globals': {},
-        'runtime': runtime, 'steps': steps
-    }
-    return tasks.xmds_run(build_path, conf)
+shots = []
+for item in itertools.product(*values):
+    conf['globals'].update(dict(zip(keys, item)))
+    shots.append(deepcopy(conf))
+
+# pprint(shots)
 
 
-def task_movie():
-    h5file = build_path / realtime_output
-    return {
-        'actions': [(make_movie, [h5file, 20, None], {})]
-    }
+def task_run_sequence():
+    def _write_conf(_conf, filename):
+        print("WRITING")
+        pprint(_conf)
+        with open(filename, 'w') as f:
+            f.write(yaml.safe_dump(_conf))
+
+    for j, conf in enumerate(shots):
+        conf_name = f'_config.yaml'
+        yield {
+            'name': j,
+            'actions': [
+                (_write_conf, [conf, conf_name]),
+                f"doit -f dodo1.py config_file={conf_name} sequence_index={sequence_index} run_number={j}"
+            ]
+        }

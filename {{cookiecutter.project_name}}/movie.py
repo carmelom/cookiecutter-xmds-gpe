@@ -14,8 +14,8 @@ try:
     from moviepy.video.io.bindings import mplfig_to_npimage
     import moviepy.editor as mpy
     IMPORT_MOVIEPY = True
-except ModuleNotFoundError as e:
-    print(f"{e}\nFallback to matplotlib")
+except ModuleNotFoundError:  # as e:
+    # print(f"{e}\nFallback to matplotlib")
     IMPORT_MOVIEPY = False
 
 
@@ -24,10 +24,11 @@ import h5py
 
 def make_movie(h5filename, fps=20, output=None):
     with h5py.File(h5filename, 'r') as f:
-        t = f['1/t'][:]
-        x = f['1/x'][:]
-        psiI = f['1/psiI'][:]
-        psiR = f['1/psiR'][:]
+        g = f['realtime/1']
+        t = g['t'][:]
+        x = g['x'][:]
+        psiI = g['psiI'][:]
+        psiR = g['psiR'][:]
 
     n = np.hypot(psiR, psiI)
     margin = 0.05
@@ -41,6 +42,8 @@ def make_movie(h5filename, fps=20, output=None):
     ax.set_ylim(ylim)
 
     if not IMPORT_MOVIEPY or output is None:
+        print("Using matplotlib")
+
         def show_frame(ix):
             line.set_ydata(n[ix])
 

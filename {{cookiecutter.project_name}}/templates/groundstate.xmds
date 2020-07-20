@@ -1,7 +1,8 @@
 <simulation xmds-version="2">
 
-    {% include 'header.xmds' %}
+    {% include '_header.xmds' %}
 
+    {% include '_geometry.xmds' %}
 
     <vector name="wavefunction" dimensions="x" type="complex">
         <components>psi</components>
