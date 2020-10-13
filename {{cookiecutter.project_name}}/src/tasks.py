@@ -34,7 +34,7 @@ def xmds_run(build_dir, conf):
     init_filename = conf.get('init_filename', None)
     yield create_render_task(name, build_dir, conf)
     yield create_compile_task(name, build_dir)
-    yield create_run_task(name, build_dir, output_filename, init_filename)
+    # yield create_run_task(name, build_dir, output_filename, init_filename)
 
 
 # rudimental task creators

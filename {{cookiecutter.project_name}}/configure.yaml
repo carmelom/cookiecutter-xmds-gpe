@@ -4,10 +4,15 @@ build_dir:           build
 run_dir:             run
 h5filepath:          "{sequence_index:04d}/{{cookiecutter.project_name}}_{run_number:04d}.h5"
 
-groundstate_output:  groundstate.h5
-realtime_output:     realtime.h5
+groundstate:
+    output_filename: groundstate.h5
+    runtime:         1
 
-runtime:             10
+realtime:
+    init_filename:   groundstate.h5
+    output_filename: realtime.h5
+    runtime:             10
+
 dt:                  1.e-3
 
 globals:

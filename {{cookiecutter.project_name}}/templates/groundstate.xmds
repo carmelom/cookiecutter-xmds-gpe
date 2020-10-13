@@ -25,7 +25,7 @@
     </computed_vector>
 
     <sequence>
-        <integrate algorithm="ARK45" interval="1" steps="300" tolerance="1e-06">
+        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="300" tolerance="1e-06">
             <samples> 100 </samples>
             <filters where="step end">
                 <filter>

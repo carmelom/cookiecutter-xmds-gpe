@@ -6,13 +6,13 @@
 
     <vector name="wavefunction" dimensions="x" type="complex">
         <components>psi</components>
-            <initialisation kind="hdf5">
-                <filename>{{conf.init_filename}}</filename>
-            </initialisation>
+        <initialisation kind="hdf5">
+            <filename>{{conf.init_filename}}</filename>
+        </initialisation>
     </vector>
 
     <sequence>
-        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{conf.steps}}" tolerance="1e-06">
+        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{ (((conf.runtime / conf.dt / 100) | round) * 100) | int }}" tolerance="1e-06">
             <samples>
                 200
             </samples>

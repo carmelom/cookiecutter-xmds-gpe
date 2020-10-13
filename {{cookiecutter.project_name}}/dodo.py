@@ -1,62 +1,81 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Created: 07-2020 - Carmelo Mordini <carmelo> <carmelo.mordini@unitn.it>
+# Create: 01-2020 - Carmelo Mordini <carmelo> <carmelo.mordini@unitn.it>
 
 """Module docstring
 
 """
 from pathlib import Path
-import itertools
-from copy import deepcopy
-from src.tasks import autosequence
+from src import tasks
+from src import h5tools
+from doit import get_var
 
 from ruamel import yaml
 
 DOIT_CONFIG = {
     'verbosity': 2,
     'backend': 'json',
+    # 'default_tasks': [
+    #     'groundstate',
+    #     'realtime',
+    #     'collect'
+    # ],
+    'dep_file': '.doit.db',
 }
 
+config_file = get_var('config_file', 'configure.yaml')
 
-with open('configure.yaml', 'r') as f:
+with open(config_file, 'r') as f:
     conf = yaml.safe_load(f)
 
+
+build_dir = Path(conf['build_dir'])
+build_dir.mkdir(parents=True, exist_ok=True)
+
 run_dir = Path(conf['run_dir'])
-run_dir.mkdir(parents=True, exist_ok=True)
-sequence_index = autosequence(run_dir)
 
-scan = {
-    'imprint_x0': list(range(1, 5, 1)),
-}
+sequence_index = int(get_var('sequence_index', h5tools.autosequence(run_dir)))
+run_number = int(get_var('run_number', 0))
 
-keys, values = list(zip(*scan.items()))
-
-shots = []
-for item in itertools.product(*values):
-    conf['globals'].update(dict(zip(keys, item)))
-    shots.append(deepcopy(conf))
+h5filepath = run_dir / \
+    conf['h5filepath'].format(
+        sequence_index=sequence_index, run_number=run_number)
 
 
-def task_run_sequence():
-    def _write_conf(_conf, filename):
-        # print("WRITING")
-        # pprint(_conf)
-        with open(filename, 'w') as f:
-            f.write(yaml.safe_dump(_conf))
-
-    for j, conf in enumerate(shots):
-        conf_name = '_config.yaml'
-        yield {
-            'name': j,
-            'actions': [
-                (_write_conf, [conf, conf_name]),
-                f"doit -f dodo1.py config_file={conf_name} sequence_index={sequence_index} run_number={j}"
-            ]
-        }
+def task_groundstate():
+    name = 'groundstate'
+    _conf = conf.copy()
+    _conf['exec_filename'] = name
+    _conf.update(_conf[name])
+    return tasks.xmds_run(build_dir, _conf)
 
 
-def task_clear():
+def task_realtime():
+    name = 'realtime'
+    _conf = conf.copy()
+    _conf['exec_filename'] = name
+    _conf.update(_conf[name])
+    return tasks.xmds_run(build_dir, _conf)
+
+
+def task_collect():
+    def _mkpath():
+        print(h5filepath)
+        h5filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    actions = [
+        _mkpath,
+        (h5tools.copy_attrs, [h5filepath, conf]),
+    ]
+    fdeps = []
+    for name in 'groundstate', 'realtime':
+        target_file = build_dir / conf[name]['output_filename']
+        action = (h5tools.copy_group, [target_file, h5filepath, name])
+        actions.append(action)
+        fdeps.append(target_file)
+
     return {
-        'actions': ['doit -f dodo1.py clear']
+        'actions': actions,
+        'file_dep': fdeps
     }
