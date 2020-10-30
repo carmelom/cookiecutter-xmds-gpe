@@ -13,11 +13,9 @@
 
     <sequence>
         <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{ (((conf.runtime / conf.dt / 100) | round) * 100) | int }}" tolerance="1e-06">
-            <samples>
-                200
-            </samples>
+            <samples> {{ ((conf.runtime / conf.sampling_dt) | round) | int }} </samples>
             <operators>
-                <operator kind="ip">
+                <operator kind="ip" type="imaginary">
                     <operator_names>Tx</operator_names>
                     <![CDATA[Tx = -i*0.5*kx*kx;]]>
                 </operator>

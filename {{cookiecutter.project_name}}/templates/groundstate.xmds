@@ -25,7 +25,7 @@
     </computed_vector>
 
     <sequence>
-        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="300" tolerance="1e-06">
+        <integrate algorithm="ARK45" interval="{{conf.runtime}}" steps="{{ (((conf.runtime / conf.dt / 100) | round) * 100) | int }}" tolerance="1e-06">
             <samples> 100 </samples>
             <filters where="step end">
                 <filter>
@@ -34,7 +34,7 @@
                 </filter>
             </filters>
             <operators>
-                <operator kind="ip">
+                <operator kind="ip" type="real">
                     <operator_names>Tx</operator_names>
                     <![CDATA[Tx = -0.5*kx*kx;]]>
                 </operator>

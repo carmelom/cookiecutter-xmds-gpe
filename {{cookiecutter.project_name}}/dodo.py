@@ -60,14 +60,7 @@ def task_realtime():
 
 
 def task_collect():
-    def _mkpath():
-        print(h5filepath)
-        h5filepath.parent.mkdir(parents=True, exist_ok=True)
-
-    actions = [
-        _mkpath,
-        (h5tools.copy_attrs, [h5filepath, conf]),
-    ]
+    actions = [(h5tools.mkpath, [h5filepath, conf])]
     fdeps = []
     for name in 'groundstate', 'realtime':
         target_file = build_dir / conf[name]['output_filename']

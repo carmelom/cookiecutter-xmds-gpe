@@ -14,6 +14,7 @@ realtime:
     runtime:             10
 
 dt:                  1.e-3
+sampling_dt:         0.05
 
 globals:
     imprint_x0:      3

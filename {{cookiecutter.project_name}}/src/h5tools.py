@@ -22,6 +22,12 @@ def autosequence(run_dir, fmt="{:04d}"):
     return sequence_index
 
 
+def mkpath(h5filepath, conf):
+    print(h5filepath)
+    h5filepath.parent.mkdir(parents=True, exist_ok=True)
+    copy_attrs(h5filepath, conf)
+
+
 def copy_attrs(h5file, data, group='configure'):
     with h5py.File(h5file, 'a') as fd:
         g = fd.require_group(group)
