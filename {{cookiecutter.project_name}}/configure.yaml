@@ -13,6 +13,12 @@ realtime:
     output_filename: realtime.h5
     runtime:             10
 
+continue:
+    init_filename:       init_continue.h5
+    output_filename:     continue.h5
+    runtime:             10
+
+
 dt:                  1.e-3
 sampling_dt:         0.05
 

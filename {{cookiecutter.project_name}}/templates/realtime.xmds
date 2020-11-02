@@ -29,7 +29,7 @@
     </sequence>
 
     <output filename="{{conf.output_filename | replace(".h5", "")}}">
-        <sampling_group basis="x" initial_sample="yes">
+        <sampling_group basis="x" initial_sample="no">
             <moments>psiR psiI</moments>
             <dependencies>wavefunction</dependencies>
             <![CDATA[_SAMPLE_COMPLEX(psi);]]>
