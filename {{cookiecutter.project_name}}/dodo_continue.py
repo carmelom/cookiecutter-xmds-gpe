@@ -14,6 +14,7 @@ import numpy as np
 import h5py
 
 from ruamel import yaml
+from copy import deepcopy
 
 DOIT_CONFIG = {
     'verbosity': 2,
@@ -72,9 +73,9 @@ def task_init():
 
 def task_continue():
     name = 'continue'
-    _conf = conf.copy()
+    _conf = deepcopy(conf)
     _conf['exec_filename'] = 'realtime'
-    _conf.update(_conf[name])
+    _conf = tasks.rec_update(_conf, _conf[name])
     return tasks.xmds_run(build_dir, _conf)
 
 

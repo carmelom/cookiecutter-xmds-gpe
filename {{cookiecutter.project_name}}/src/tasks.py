@@ -9,6 +9,8 @@
 from pathlib import Path
 from doit.action import CmdAction
 from doit.tools import config_changed
+import collections.abc
+from copy import deepcopy
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -17,7 +19,25 @@ template_files = list(Path('templates').glob('*.xmds'))
 env = Environment(loader=file_loader, trim_blocks=True, lstrip_blocks=True)
 
 
+def conf_update(conf, name):
+    _conf = deepcopy(conf)
+    _conf['exec_filename'] = name
+    return rec_update(_conf, _conf[name])
+
+
+def rec_update(d, u):
+    # recursive dict update
+    # https://stackoverflow.com/a/3233356
+    for k, v in u.items():
+        if isinstance(v, collections.abc.Mapping):
+            d[k] = rec_update(d.get(k, {}), v)
+        else:
+            d[k] = v
+    return d
+
+
 def render_template(template_name, output_name, conf):
+    # print(conf['globals'])
     template = env.get_template(template_name)
     output = template.render(conf=conf)
     with open(output_name, 'w') as f:

@@ -45,17 +45,13 @@ h5filepath = run_dir / \
 
 def task_groundstate():
     name = 'groundstate'
-    _conf = conf.copy()
-    _conf['exec_filename'] = name
-    _conf.update(_conf[name])
+    _conf = tasks.conf_update(conf, name)
     return tasks.xmds_run(build_dir, _conf)
 
 
 def task_realtime():
     name = 'realtime'
-    _conf = conf.copy()
-    _conf['exec_filename'] = name
-    _conf.update(_conf[name])
+    _conf = tasks.conf_update(conf, name)
     return tasks.xmds_run(build_dir, _conf)
 
 
